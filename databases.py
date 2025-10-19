@@ -17,6 +17,7 @@ class TaskOrmExcursions(Model):
     name: Mapped[str]
     gid: Mapped[str]
     date: Mapped[datetime]
+    photo: Mapped[str]
 
 class TaskOrmUsers(Model):
     __tablename__ = 'users'
