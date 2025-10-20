@@ -1,5 +1,8 @@
 const API_URL = 'http://127.0.0.1:8000/excursions';
 const IS_ADMIN = true;
+let currentPage = 1;
+const PAGE_LIMIT = 6; // или получай из select
+
 
 document.addEventListener('DOMContentLoaded', () => {
   if (IS_ADMIN) {
@@ -142,6 +145,7 @@ async function loadExcursionById() {
 
     const item = await res.json();
 
+    // Заполнение текстовых полей
     document.getElementById('excName').textContent = item.name;
     document.getElementById('excGid').textContent = item.gid;
     document.getElementById('excDate').textContent = formatDate(item.date);
@@ -149,10 +153,12 @@ async function loadExcursionById() {
     document.getElementById('excPrice').textContent = item.price;
     document.getElementById('excPeople').textContent = `${item.actual_people}/${item.max_people ?? '∞'}`;
 
+    // Фото
     if (item.photo) {
       document.getElementById('excPhoto').innerHTML = `<img src="${getPhotoUrl(item.photo)}" alt="Фото экскурсии" />`;
     }
 
+    // Круг занятости
     const percent = item.max_people
       ? Math.round((item.actual_people / item.max_people) * 100)
       : 0;
@@ -160,18 +166,95 @@ async function loadExcursionById() {
     const circle = document.getElementById('circleProgress');
     const text = document.getElementById('circleText');
 
-    circle.setAttribute('stroke-dasharray', `${percent}, 100`);
-    text.textContent = `${percent}%`;
+    if (circle && text) {
+      circle.style.setProperty('--percent', `${percent}`);
+      circle.setAttribute('stroke-dasharray', `0, 100`);
+      setTimeout(() => {
+      animateCircle(circle, percent);
+      }, 100);
 
-    if (percent < 50) {
-      circle.setAttribute('stroke', '#4caf50');
-    } else if (percent < 80) {
-      circle.setAttribute('stroke', '#ff9800');
+      text.textContent = `${percent}%`;
+
+      if (percent < 50) {
+        circle.setAttribute('stroke', '#4caf50');
+      } else if (percent < 80) {
+        circle.setAttribute('stroke', '#ff9800');
+      } else {
+        circle.setAttribute('stroke', '#f44336');
+      }
+    }
+
+    // Кнопка бронирования
+    const bookBtn = document.getElementById('bookBtn');
+    const bookStatus = document.getElementById('bookStatus');
+
+    if (item.max_people && item.actual_people >= item.max_people) {
+      bookBtn.disabled = true;
+      bookStatus.textContent = '❌ Все места заняты';
     } else {
-      circle.setAttribute('stroke', '#f44336');
+      bookBtn.disabled = false;
+      bookStatus.textContent = '';
+      bookBtn.onclick = () => {
+        document.getElementById('confirmModal').classList.remove('hidden');
+      };
+
+      document.getElementById('confirmNo').onclick = () => {
+        document.getElementById('confirmModal').classList.add('hidden');
+      };
+
+      document.getElementById('confirmYes').onclick = async () => {
+        document.getElementById('confirmModal').classList.add('hidden');
+        try {
+          const res = await fetch(`${API_URL}/book/${item.id}`, { method: 'POST' });
+          if (!res.ok) throw new Error('Ошибка бронирования');
+
+          bookStatus.textContent = '✅ Место успешно забронировано';
+          bookBtn.disabled = true;
+
+          item.actual_people += 1;
+          document.getElementById('excPeople').textContent = `${item.actual_people}/${item.max_people ?? '∞'}`;
+          const newPercent = item.max_people
+            ? Math.round((item.actual_people / item.max_people) * 100)
+            : 0;
+          animateCircle(circle, newPercent);
+          text.textContent = `${newPercent}%`;
+
+          if (newPercent < 50) {
+            circle.setAttribute('stroke', '#4caf50');
+          } else if (newPercent < 80) {
+            circle.setAttribute('stroke', '#ff9800');
+          } else {
+            circle.setAttribute('stroke', '#f44336');
+          }
+        } catch {
+          bookStatus.textContent = '❌ Не удалось забронировать';
+        }
+      };
+
     }
   } catch (err) {
     document.querySelector('.container').innerHTML = '❌ Не удалось загрузить экскурсию';
     console.error(err);
   }
 }
+
+function animateCircle(circle, targetPercent) {
+  let current = 0;
+  const existing = circle.getAttribute('stroke-dasharray');
+  if (existing) {
+    const parts = existing.split(',');
+    current = parseFloat(parts[0]) || 0;
+  }
+
+  const step = () => {
+    current += 2;
+    if (current > targetPercent) current = targetPercent;
+    circle.setAttribute('stroke-dasharray', `${current}, 100`);
+    if (current < targetPercent) {
+      requestAnimationFrame(step);
+    }
+  };
+  requestAnimationFrame(step);
+}
+
+

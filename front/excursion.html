@@ -13,11 +13,13 @@
     <div class="excursion-card">
       <div class="excursion-info">
         <h2 id="excName">...</h2>
-        <p><strong>Гид:</strong> <span id="excGid">...</span></p>
-        <p><strong>Дата экскурсии:</strong> <span id="excDate">...</span></p>
-        <p><strong>Создано:</strong> <span id="excCreated">...</span></p>
-        <p><strong>Цена:</strong> <span id="excPrice">...</span> BYN</p>
-        <p><strong>Мест:</strong> <span id="excPeople">...</span></p>
+        <p><span class="icon">🧑‍🏫</span> <strong>Гид:</strong> <span id="excGid">...</span></p>
+        <p><span class="icon">📅</span> <strong>Дата:</strong> <span id="excDate">...</span></p>
+        <p><span class="icon">🕒</span> <strong>Создано:</strong> <span id="excCreated">...</span></p>
+        <p><span class="icon">💰</span> <strong>Цена:</strong> <span id="excPrice">...</span> BYN</p>
+        <p><span class="icon">👥</span> <strong>Мест:</strong> <span id="excPeople">...</span></p>
+        <button id="bookBtn" class="book-btn">Забронировать место</button>
+        <p id="bookStatus" class="status-text"></p>
       </div>
 
       <div class="circle-container">
@@ -40,5 +42,12 @@
   </div>
 
   <script src="script.js"></script>
+<div id="confirmModal" class="modal hidden">
+  <div class="modal-content">
+    <p>Вы уверены, что хотите забронировать место?</p>
+    <button id="confirmYes">Да</button>
+    <button id="confirmNo">Отмена</button>
+  </div>
+</div>
 </body>
 </html>

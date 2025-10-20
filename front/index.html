@@ -8,40 +8,37 @@
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>🌍 Экскурсии</h1>
-      <div class="controls">
-        <label>
-          Показать:
-          <select id="limitSelect">
-            <option value="4">4</option>
-            <option value="8" selected>8</option>
-            <option value="12">12</option>
-            <option value="24">24</option>
-          </select>
-        </label>
-        <button class="update-page" id="loadBtn">🔄 Обновить</button>
-      </div>
-    </header>
+    <h1>Доступные экскурсии</h1>
 
-    <section id="adminSection" style="display: none;">
-      <h2>➕ Добавить экскурсию</h2>
-        <form id="excursionForm" enctype="multipart/form-data">
-          <input type="text" name="name" placeholder="Название" required />
-          <input type="text" name="gid" placeholder="Гид" required />
-          <input class="date-input" type="date" name="date" required />
-          <input type="number" name="price" placeholder="Цена (BYN)" step="0.01" />
-          <input type="number" name="max_people" placeholder="Макс. человек" />
-          <input type="file" name="photo" accept="image/*" required />
-          <button type="submit">Добавить</button>
-        </form>
-      <div class="status" id="postResult"></div>
-    </section>
+    <div class="pagination">
+      <label for="limitSelect">Показать по:</label>
+      <select id="limitSelect">
+        <option value="3">3</option>
+        <option value="6" selected>6</option>
+        <option value="9">9</option>
+        <option value="12">12</option>
+      </select>
 
-    <section>
-      <h2>📋 Список экскурсий</h2>
-      <div id="excursionGrid" class="grid"></div>
-    </section>
+      <button id="prevPage">← Назад</button>
+      <span id="pageIndicator">Страница 1</span>
+      <button id="nextPage">Вперёд →</button>
+    </div>
+
+    <div id="excursionGrid" class="grid"></div>
+
+    <div id="adminSection" style="display: none;">
+      <h2>Добавить экскурсию</h2>
+      <form id="excursionForm">
+        <input type="text" name="name" placeholder="Название" required />
+        <input type="text" name="gid" placeholder="Гид" required />
+        <input type="datetime-local" name="date" required />
+        <input type="number" name="price" placeholder="Цена (BYN)" min="0" />
+        <input type="number" name="max_people" placeholder="Максимум человек" min="5" />
+        <input type="file" name="photo" accept="image/*" required />
+        <button type="submit">Добавить</button>
+      </form>
+      <p id="postResult" class="status-text"></p>
+    </div>
   </div>
 
   <script src="script.js"></script>
