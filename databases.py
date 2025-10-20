@@ -18,6 +18,10 @@ class TaskOrmExcursions(Model):
     gid: Mapped[str]
     date: Mapped[datetime]
     photo: Mapped[str]
+    max_people: Mapped[int|None] = mapped_column(default=None)
+    actual_people: Mapped[int] = mapped_column(default=0)
+    price: Mapped[float] = mapped_column(default=0.0)
+    created: Mapped[datetime] = mapped_column(default=datetime.now())
 
 class TaskOrmUsers(Model):
     __tablename__ = 'users'
