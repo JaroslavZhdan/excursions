@@ -20,7 +20,7 @@
             <option value="24">24</option>
           </select>
         </label>
-        <button id="loadBtn">🔄 Обновить</button>
+        <button class = "update-page" id="loadBtn">🔄 Обновить</button>
       </div>
     </header>
 
@@ -29,11 +29,11 @@
       <form id="excursionForm" enctype="multipart/form-data">
         <input type="text" name="name" placeholder="Название" required />
         <input type="text" name="gid" placeholder="Гид" required />
-        <input type="date" name="date" required />
+        <input class = "date-input" type="date" name="date" required />
         <input type="file" name="photo" accept="image/*" required />
         <button type="submit">Добавить</button>
       </form>
-      <div id="postResult"></div>
+      <div class = 'status' id="postResult"></div>
     </section>
 
     <section>

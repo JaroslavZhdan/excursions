@@ -78,3 +78,31 @@ form button:hover {
   border-radius: 6px;
   margin-top: 10px;
 }
+
+.update-page{
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 5px;
+}
+
+.update-page:hover{
+  background-color: #005fa3;
+  transition: background-color 0.2s;
+}
+
+.date-input{
+  background-color: white;
+  color: gray;
+}
+
+.status{
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.show-status{
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}

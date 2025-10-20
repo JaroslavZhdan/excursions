@@ -36,15 +36,23 @@ async function handleSubmit(e) {
       body: formData
     });
 
+    const status = document.getElementById('postResult');
+
     const text = await res.text();
-    document.getElementById('postResult').innerText = res.ok
-      ? '✅ Успешно добавлено!'
-      : `❌ Ошибка: ${text}`;
 
     if (res.ok) {
       form.reset();
       loadExcursions();
     }
+    status.innerText = res.ok
+      ? 'Успешно добавлено!'
+      : `Ошибка: ${text}`;
+
+    status.classList.add('show-status');
+      setTimeout(() => {
+        status.classList.remove('show-status');
+      }, 2000);
+
   } catch (err) {
     document.getElementById('postResult').innerText = '❌ Ошибка соединения';
   }
