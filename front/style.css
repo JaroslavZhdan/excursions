@@ -67,6 +67,7 @@ form button:hover {
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 15px;
   transition: transform 0.2s ease;
+  cursor: pointer;
 }
 
 .grid > div:hover {
@@ -79,30 +80,183 @@ form button:hover {
   margin-top: 10px;
 }
 
-.update-page{
+.update-page {
   background-color: #0077cc;
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 5px 5px;
+  padding: 5px 10px;
+  font-size: 1rem;
 }
 
-.update-page:hover{
+.update-page:hover {
   background-color: #005fa3;
   transition: background-color 0.2s;
 }
 
-.date-input{
+.date-input {
   background-color: white;
   color: gray;
 }
 
-.status{
+.status {
   opacity: 0;
   transition: opacity 0.2s ease;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
-.show-status{
+.show-status {
   opacity: 1;
-  transition: opacity 0.2s ease;
 }
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 800px;
+  width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.excursion-full {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.excursion-full img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.circle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.circle {
+  width: 120px;
+  height: 120px;
+}
+
+.circle path.bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3.8;
+}
+
+.circle path.progress {
+  fill: none;
+  stroke-width: 3.8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s ease, stroke 0.5s ease;
+}
+
+.circle-text {
+  font-size: 0.6rem;
+  text-anchor: middle;
+  fill: #333;
+}
+
+.excursion-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-top: 20px;
+  gap: 20px;
+}
+
+.excursion-info {
+  flex: 1 1 300px;
+  font-size: 1rem;
+}
+
+.excursion-info h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+
+.circle-container {
+  width: 140px;
+  text-align: center;
+}
+
+.circle {
+  width: 100%;
+  height: auto;
+}
+
+.circle path.bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3.8;
+}
+
+.circle path.progress {
+  fill: none;
+  stroke-width: 3.8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s ease, stroke 0.5s ease;
+}
+
+.circle-text {
+  font-size: 0.6rem;
+  text-anchor: middle;
+  fill: #333;
+}
+
+.excursion-photo {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.excursion-photo img {
+  max-width: 100%;
+  border-radius: 10px;
+}
+
+

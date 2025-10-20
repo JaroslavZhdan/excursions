@@ -1,17 +1,31 @@
 const API_URL = 'http://127.0.0.1:8000/excursions';
-const IS_ADMIN = true; // ← поменяй на false, если пользователь не админ
+const IS_ADMIN = true;
 
 document.addEventListener('DOMContentLoaded', () => {
   if (IS_ADMIN) {
-    document.getElementById('adminSection').style.display = 'block';
+    const adminSection = document.getElementById('adminSection');
+    if (adminSection) adminSection.style.display = 'block';
   }
 
-  document.getElementById('excursionForm').addEventListener('submit', handleSubmit);
-  document.getElementById('loadBtn').addEventListener('click', loadExcursions);
-  document.getElementById('limitSelect').addEventListener('change', loadExcursions);
+  const form = document.getElementById('excursionForm');
+  if (form) form.addEventListener('submit', handleSubmit);
 
-  loadExcursions();
+  const loadBtn = document.getElementById('loadBtn');
+  if (loadBtn) loadBtn.addEventListener('click', loadExcursions);
+
+  const limitSelect = document.getElementById('limitSelect');
+  if (limitSelect) limitSelect.addEventListener('change', loadExcursions);
+
+  if (window.location.pathname.endsWith('excursion.html')) {
+    loadExcursionById();
+  } else {
+    loadExcursions();
+  }
 });
+
+function getPhotoUrl(path) {
+  return path.startsWith('http') ? path : `http://127.0.0.1:8000/${path}`;
+}
 
 async function handleSubmit(e) {
   e.preventDefault();
@@ -20,13 +34,36 @@ async function handleSubmit(e) {
   const gid = form.gid.value.trim();
   const date = new Date(form.date.value).toISOString();
   const photoFile = form.photo.files[0];
+  const status = document.getElementById('postResult');
 
   if (!name || !gid || !date || !photoFile) {
-    document.getElementById('postResult').innerText = '❌ Все поля обязательны';
+    showStatus('❌ Все обязательные поля должны быть заполнены', status);
     return;
   }
 
   const queryParams = new URLSearchParams({ name, gid, date });
+
+  const priceRaw = form.price.value.trim();
+  const maxRaw = form.max_people.value.trim();
+
+  if (priceRaw) {
+    const price = parseFloat(priceRaw);
+    if (isNaN(price) || price < 0) {
+      showStatus('❌ Цена должна быть неотрицательной', status);
+      return;
+    }
+    queryParams.append('price', price.toString());
+  }
+
+  if (maxRaw) {
+    const max_people = parseInt(maxRaw, 10);
+    if (isNaN(max_people) || max_people < 5) {
+      showStatus('❌ Максимум человек должен быть ≥ 5', status);
+      return;
+    }
+    queryParams.append('max_people', max_people.toString());
+  }
+
   const formData = new FormData();
   formData.append('photo', photoFile);
 
@@ -36,33 +73,22 @@ async function handleSubmit(e) {
       body: formData
     });
 
-    const status = document.getElementById('postResult');
-
     const text = await res.text();
+    showStatus(res.ok ? '✅ Успешно добавлено!' : `❌ Ошибка: ${text}`, status);
 
     if (res.ok) {
       form.reset();
       loadExcursions();
     }
-    status.innerText = res.ok
-      ? 'Успешно добавлено!'
-      : `Ошибка: ${text}`;
-
-    status.classList.add('show-status');
-      setTimeout(() => {
-        status.classList.remove('show-status');
-      }, 2000);
-
-  } catch (err) {
-    document.getElementById('postResult').innerText = '❌ Ошибка соединения';
+  } catch {
+    showStatus('❌ Ошибка соединения', status);
   }
 }
 
-function getPhotoUrl(path) {
-  // Если путь уже абсолютный — возвращаем как есть
-  if (path.startsWith('http')) return path;
-  // Иначе добавляем базовый адрес
-  return `http://127.0.0.1:8000/${path}`;
+function showStatus(message, element) {
+  element.innerText = message;
+  element.classList.add('show-status');
+  setTimeout(() => element.classList.remove('show-status'), 2000);
 }
 
 async function loadExcursions() {
@@ -80,11 +106,72 @@ async function loadExcursions() {
         <h3>${item.name}</h3>
         <p><strong>Гид:</strong> ${item.gid}</p>
         <p><strong>Дата:</strong> ${item.date}</p>
+        <p><strong>Цена:</strong> ${item.price} BYN</p>
+        <p><strong>Мест:</strong> ${item.actual_people}/${item.max_people ?? '∞'}</p>
         ${item.photo ? `<img src="${getPhotoUrl(item.photo)}" alt="Фото экскурсии" />` : ''}
       `;
+      card.addEventListener('click', () => {
+        window.location.href = `excursion.html?id=${item.id}`;
+      });
       container.appendChild(card);
     });
-  } catch (err) {
+  } catch {
     document.getElementById('excursionGrid').innerText = '❌ Не удалось загрузить данные';
+  }
+}
+
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+async function loadExcursionById() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (!id) return;
+
+  try {
+    const res = await fetch(`${API_URL}/${id}`);
+    if (!res.ok) throw new Error('Ошибка загрузки');
+
+    const item = await res.json();
+
+    document.getElementById('excName').textContent = item.name;
+    document.getElementById('excGid').textContent = item.gid;
+    document.getElementById('excDate').textContent = formatDate(item.date);
+    document.getElementById('excCreated').textContent = formatDate(item.created);
+    document.getElementById('excPrice').textContent = item.price;
+    document.getElementById('excPeople').textContent = `${item.actual_people}/${item.max_people ?? '∞'}`;
+
+    if (item.photo) {
+      document.getElementById('excPhoto').innerHTML = `<img src="${getPhotoUrl(item.photo)}" alt="Фото экскурсии" />`;
+    }
+
+    const percent = item.max_people
+      ? Math.round((item.actual_people / item.max_people) * 100)
+      : 0;
+
+    const circle = document.getElementById('circleProgress');
+    const text = document.getElementById('circleText');
+
+    circle.setAttribute('stroke-dasharray', `${percent}, 100`);
+    text.textContent = `${percent}%`;
+
+    if (percent < 50) {
+      circle.setAttribute('stroke', '#4caf50');
+    } else if (percent < 80) {
+      circle.setAttribute('stroke', '#ff9800');
+    } else {
+      circle.setAttribute('stroke', '#f44336');
+    }
+  } catch (err) {
+    document.querySelector('.container').innerHTML = '❌ Не удалось загрузить экскурсию';
+    console.error(err);
   }
 }

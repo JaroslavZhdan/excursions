@@ -20,20 +20,22 @@
             <option value="24">24</option>
           </select>
         </label>
-        <button class = "update-page" id="loadBtn">🔄 Обновить</button>
+        <button class="update-page" id="loadBtn">🔄 Обновить</button>
       </div>
     </header>
 
     <section id="adminSection" style="display: none;">
       <h2>➕ Добавить экскурсию</h2>
-      <form id="excursionForm" enctype="multipart/form-data">
-        <input type="text" name="name" placeholder="Название" required />
-        <input type="text" name="gid" placeholder="Гид" required />
-        <input class = "date-input" type="date" name="date" required />
-        <input type="file" name="photo" accept="image/*" required />
-        <button type="submit">Добавить</button>
-      </form>
-      <div class = 'status' id="postResult"></div>
+        <form id="excursionForm" enctype="multipart/form-data">
+          <input type="text" name="name" placeholder="Название" required />
+          <input type="text" name="gid" placeholder="Гид" required />
+          <input class="date-input" type="date" name="date" required />
+          <input type="number" name="price" placeholder="Цена (BYN)" step="0.01" />
+          <input type="number" name="max_people" placeholder="Макс. человек" />
+          <input type="file" name="photo" accept="image/*" required />
+          <button type="submit">Добавить</button>
+        </form>
+      <div class="status" id="postResult"></div>
     </section>
 
     <section>
